@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت پروژه</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Tahoma', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f4f8 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            max-width: 1100px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 48px;
+            padding: 32px 30px 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 8px 20px rgba(0, 20, 40, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.2s;
+        }
+
+        /* header with view counter */
+        .header-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .title-section h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #0b2a3b;
+            letter-spacing: -0.5px;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 6px 18px 6px 24px;
+            border-radius: 100px;
+            display: inline-block;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .view-counter {
+            background: #1e3b4f;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            box-shadow: 0 8px 14px rgba(0, 20, 30, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(4px);
+            border: 1px solid #6d8da0;
+        }
+
+        .view-counter span {
+            background: #ffd966;
+            color: #1e3b4f;
+            padding: 0 16px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1.6rem;
+            line-height: 1.4;
+        }
+
+        /* upload area + image preview */
+        .upload-section {
+            background: rgba(235, 245, 250, 0.6);
+            backdrop-filter: blur(4px);
+            border-radius: 36px;
+            padding: 20px 20px 10px 20px;
+            margin-bottom: 30px;
+            border: 2px dashed #3f6b7c;
+            transition: background 0.2s;
+            text-align: center;
+        }
+
+        .upload-section:hover {
+            background: rgba(220, 238, 248, 0.8);
+        }
+
+        .upload-label {
+            display: inline-block;
+            background: #1e3b4f;
+            color: white;
+            padding: 12px 34px;
+            border-radius: 60px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 1rem;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            border: 1px solid #55869e;
+        }
+
+        .upload-label:hover {
+            background: #14303f;
+            transform: scale(1.01);
+            box-shadow: 0 10px 18px rgba(0, 20, 30, 0.3);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .image-preview-container {
+            margin: 18px auto 8px;
+            max-width: 100%;
+            border-radius: 28px;
+            overflow: hidden;
+            background: #eef4f9;
+            min-height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #bfd7e3;
+        }
+
+        #previewImage {
+            max-width: 100%;
+            max-height: 420px;
+            width: auto;
+            height: auto;
+            display: block;
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+
+        .fallback-text {
+            color: #3f5f70;
+            padding: 30px 20px;
+            font-size: 1rem;
+            opacity: 0.7;
+            letter-spacing: 0.3px;
+        }
+
+        /* links grid */
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .project-link {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(4px);
+            padding: 14px 6px;
+            border-radius: 60px;
+            text-align: center;
+            font-weight: 600;
+            color: #0b2a3b;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            letter-spacing: -0.2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .project-link:hover {
+            background: white;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 20px rgba(0, 20, 30, 0.15);
+            border-color: #5f8aa0;
+            color: #003153;
+        }
+
+        .project-link::before {
+            content: "▹";
+            margin-left: 8px;
+            color: #1f556e;
+            font-size: 1.2rem;
+        }
+
+        /* responsive */
+        @media (max-width: 600px) {
+            .card {
+                padding: 22px 16px 28px;
+            }
+            .header-stats {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .view-counter {
+                width: 100%;
+                justify-content: center;
+            }
+            .links-grid {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                gap: 10px;
+            }
+            .project-link {
+                font-size: 0.85rem;
+                padding: 12px 4px;
+            }
+        }
+
+        /* tooltip */
+        .view-counter small {
+            font-weight: 300;
+            opacity: 0.8;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+
+        <!-- header + view count -->
+        <div class="header-stats">
+            <div class="title-section">
+                <h1>📋 پروژه‌ها</h1>
+            </div>
+            <div class="view-counter">
+                👁️ بازدید <span id="viewCount">0</span>
+                <small>امروز</small>
+            </div>
+        </div>
+
+        <!-- upload section with image preview -->
+        <div class="upload-section">
+            <label for="fileInput" class="upload-label">📤 آپلود نمودار</label>
+            <input type="file" id="fileInput" accept="image/*">
+            <div class="image-preview-container" id="imagePreviewContainer">
+                <img id="previewImage" src="" alt="نمودار پروژه" style="display: none;">
+                <div class="fallback-text" id="fallbackText">⬆️ تصویر نمودار پیشرفت</div>
+            </div>
+            <p style="font-size: 0.8rem; color: #1d4b5e; margin-top: 4px; opacity: 0.7;">فایل عکس (PNG, JPG, SVG, ...)</p>
+        </div>
+
+        <!-- links: حمزه - بلوار مهر - بهار آزادی - ملاصدرا - جابرانصاری - آب۲۵۰ - فارابی - سجاد - توحید -->
+        <div class="links-grid">
+            <a href="#" class="project-link">حمزه</a>
+            <a href="#" class="project-link">بلوار مهر</a>
+            <a href="#" class="project-link">بهار آزادی</a>
+            <a href="#" class="project-link">ملاصدرا</a>
+            <a href="#" class="project-link">جابرانصاری</a>
+            <a href="#" class="project-link">آب۲۵۰</a>
+            <a href="#" class="project-link">فارابی</a>
+            <a href="#" class="project-link">سجاد</a>
+            <a href="#" class="project-link">توحید</a>
+        </div>
+
+        <!-- small footer note -->
+        <div style="margin-top: 28px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 14px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+            <span style="color: #1e4b5e; font-size: 0.8rem; opacity: 0.6;">📌 برای گیت‌هاب</span>
+            <span style="color: #1e4b5e; font-size: 0.8rem; opacity: 0.6;">✨ طراحی شیک و مینیمال</span>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ---------- view counter (localStorage) ----------
+            const VIEW_KEY = 'projectDashboardViews';
+            let views = parseInt(localStorage.getItem(VIEW_KEY), 10) || 0;
+
+            // increase view only once per session (optional: per page load)
+            // but we increase on each load to simulate "بازدید" (view count)
+            views += 1;
+            localStorage.setItem(VIEW_KEY, views);
+
+            const viewSpan = document.getElementById('viewCount');
+            if (viewSpan) {
+                viewSpan.textContent = views;
+            }
+
+            // ---------- image upload handler ----------
+            const fileInput = document.getElementById('fileInput');
+            const previewImage = document.getElementById('previewImage');
+            const fallbackText = document.getElementById('fallbackText');
+
+            fileInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (!file) {
+                    // if user cancels, keep previous (or reset)
+                    return;
+                }
+
+                // check if it's an image
+                if (!file.type.startsWith('image/')) {
+                    alert('لطفاً یک فایل تصویری انتخاب کنید.');
+                    fileInput.value = ''; // reset
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    previewImage.src = imageUrl;
+                    previewImage.style.display = 'block';
+                    fallbackText.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // optional: if user clicks on preview container, trigger upload
+            const container = document.getElementById('imagePreviewContainer');
+            container.addEventListener('click', function(e) {
+                // اگر روی خود تصویر یا جای خالی کلیک شود، آپلود باز شود
+                if (e.target === container || e.target === fallbackText || e.target === previewImage) {
+                    fileInput.click();
+                }
+            });
+
+            // also make upload-label trigger file input (already via label)
+
+            // ---------- extra: reset view count (just for testing) ----------
+            // (می‌توانید با کلیک دوبار روی عدد بازدید ریست کنید)
+            viewSpan.addEventListener('dblclick', function() {
+                if (confirm('بازدیدها ریست شوند؟')) {
+                    localStorage.setItem(VIEW_KEY, '0');
+                    viewSpan.textContent = '0';
+                }
+            });
+
+            // ---------- show current year or something (optional) ----------
+            console.log('📊 صفحه مدیریت پروژه - بازدیدها:', views);
+
+        })();
+    </script>
+
+</body>
+</html>
